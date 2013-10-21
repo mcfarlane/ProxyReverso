@@ -12,6 +12,9 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.htmlparser.lexer.Lexer;
+import org.htmlparser.scanners.ScriptDecoder;
+import org.htmlparser.scanners.ScriptScanner;
 
 
  
@@ -45,6 +48,11 @@ public class ProxyReverso extends AbstractHandler
                 
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
+        //resposta.getContent().
+        ScriptDecoder decoder = new ScriptDecoder();
+        ScriptScanner scanner = new ScriptScanner();
+        Lexer nos = new Lexer(resposta.toString());
+        
         response.getWriter().println(resposta.getContentAsString());
 
     }

@@ -9,5 +9,8 @@
 	<classpathentry kind="lib" path="/home/luciano/Dropbox/TCC Proxy/jetty-distribution-9.0.6.v20130930/lib/jetty-server-9.0.6.v20130930.jar"/>
 	<classpathentry kind="lib" path="/home/luciano/Dropbox/TCC Proxy/jetty-distribution-9.0.6.v20130930/lib/jetty-servlets-9.0.6.v20130930.jar"/>
 	<classpathentry kind="lib" path="/home/luciano/Dropbox/TCC Proxy/jetty-distribution-9.0.6.v20130930/lib/jetty-io-9.0.6.v20130930.jar"/>
+	<classpathentry kind="lib" path="/home/luciano/Dropbox/TCC Proxy/HTMLParser-2.0-SNAPSHOT/lib/filterbuilder.jar"/>
+	<classpathentry kind="lib" path="/home/luciano/Dropbox/TCC Proxy/HTMLParser-2.0-SNAPSHOT/lib/htmllexer.jar"/>
+	<classpathentry kind="lib" path="/home/luciano/Dropbox/TCC Proxy/HTMLParser-2.0-SNAPSHOT/lib/htmlparser.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
