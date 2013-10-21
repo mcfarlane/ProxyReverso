@@ -35,13 +35,8 @@ public class ProxyReverso extends AbstractHandler
          try {
              
 
-         	resposta = cliente.newRequest("http://localhost:8080").method(HttpMethod.HEAD).agent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0) Gecko/20100101 Firefox/17.0").send();
+         	resposta = cliente.newRequest("http://localhost:8080").method(HttpMethod.GET).send();
          	
-         	for (int i = 0; i < 9; i++) {
-				
-			
-         	response.getWriter().println(resposta.getHeaders().getField(i).toString());
-         	}
          } catch (InterruptedException | ExecutionException | TimeoutException e) {
  			e.printStackTrace();
  			response.getWriter().println(e.toString());
