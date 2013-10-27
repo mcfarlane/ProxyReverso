@@ -7,6 +7,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -26,10 +27,15 @@ import org.htmlparser.lexer.Lexer;
 import org.htmlparser.parserapplications.filterbuilder.FilterBuilder;
 import org.htmlparser.scanners.ScriptDecoder;
 import org.htmlparser.scanners.ScriptScanner;
+import org.htmlparser.tags.BodyTag;
+import org.htmlparser.tags.Html;
+import org.htmlparser.tags.LinkTag;
+import org.htmlparser.tags.ParagraphTag;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.ParserFeedback;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -51,7 +57,6 @@ public class ProxyReverso extends AbstractHandler
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-         //Request req = HttpClient.newRequest("teste");
          try {
              
 
@@ -65,93 +70,53 @@ public class ProxyReverso extends AbstractHandler
                 
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-//        ScriptDecoder decoder = new ScriptDecoder();
-//        ScriptScanner scanner = new ScriptScanner();
-        Lexer nos = new Lexer(resposta.getContentAsString());
-//        
+        Lexer nos = new Lexer(resposta.getContentAsString().replaceAll("\n", "").replaceAll("\t", ""));
         
         Parser parser;
 		try {
-			//response.getWriter().println(nos.getCurrentLine());
-			//response.getWriter().println("0");
+            //System.out.println("TRY");
+
 			parser = new Parser(nos);
 			response.getWriter().println(parser.getEncoding());
 			NodeFilter filter = new TagNameFilter("html");
 	        NodeList list = parser.parse(filter).extractAllNodesThatMatch(filter);
+	        response.getWriter();
 	        response.getWriter().println(list.size());
-	 
-	      //  list.elements().nextNode().getFirstChild().setParent();
-	        response.getWriter().println(list.toHtml());
-	        Node no = list.elements().nextNode();
+	        response.getWriter().println(list.toHtml().trim());
 	        
-	        //list.remove(no);
-	        response.getWriter().println(no.getFirstChild().getText());
-	        
-//	      	for (NodeIterator e = parser.elements (); e.hasMoreNodes ();)
-//				  
-//				    	e.nextNode().collectInto(list, filter);
-//			
-//				  }
-//				Node[] node = list.toNodeArray();
-//				response.getWriter().println(node.length);
-//				
-//				response.getWriter().println(node[0].toString());
+	        String[][] resultSet = new String[list.size()][2];
+		
+	        for (int i=0;i<list.size();i++) {
+                Node n = list.elementAt(i);
+                response.getWriter().println(n); // DEBUG remove me!
+	            resultSet[i][0]=n.toPlainTextString().trim();
+	            resultSet[i][1]=null;
+	            Node c = n.getLastChild();
+	            response.getWriter().println(c.toHtml());
+	            while( c!=null ) {
+	            	//System.out.println( c.toString());
+	            	if( c instanceof BodyTag ) {
+	            		System.out.println("IF");
+	                	response.getWriter().println(c.getClass().getName());
+	                    resultSet[i][1] = ((BodyTag) c).getTagName();
+	                    ((BodyTag) c).setTagName("Head");
+	                    Node end = ((BodyTag) c).getEndTag();
+	                    //((BodyTag) end).setEndTag(new Tag().setTagName("head"));
+	                    System.out.println(end.toString());
+
+	                    
+	                    break;
+	                }
+	                c.getFirstChild();
+	            }
+	            response.getWriter().println(c.toHtml());
+	            response.getWriter().println(i+" text :"+resultSet[i][0]); // DEBUG remove me!
+	            response.getWriter().println(i+" link :"+resultSet[i][1]); // DEBUG remove me!
+	        } 
+		
 		} catch (ParserException e) {
 			((Throwable) e).printStackTrace();
 		}
-        
-        
-//        NodeList listaNo = new NodeList();
-//        ParserFeedback fb = null;
-//        NodeFilter filter = new TagNameFilter("body");
-//        //scanner.scan(tag, nos, listaNo);
-//		Parser parse = new Parser(nos, fb);
-//		response.getWriter().println(parse.getEncoding());
-//		response.getWriter().println(parse.getVersion());
-//		response.getWriter().println(parse.getNodeFactory().toString());
-
-//        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//        dbf.setValidating(false);
-//        dbf.setNamespaceAware(true);
-//        dbf.setIgnoringComments(false);
-//        dbf.setIgnoringElementContentWhitespace(false);
-//        dbf.setExpandEntityReferences(false);
-//        
-//        
-//        DocumentBuilder db;
-//		try {
-//			db = dbf.newDocumentBuilder();
-//			db.parse(new InputSource(resposta.getContentAsString()));
-//			
-//			response.getWriter().println(db.getSchema());
-//			response.getWriter().println(db.toString());
-//			
-//			
-//			
-//			
-//			
-//			
-//		} catch (ParserConfigurationException | SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//        
-//        
-//		try {
-//			for (NodeIterator e = parse.elements (); e.hasMoreNodes ();)
-//			  {
-//			    	e.nextNode().collectInto(listaNo, filter);
-//		
-//			  }
-//			Node[] node = listaNo.toNodeArray();
-//			response.getWriter().println(node.length);
-//			
-//			response.getWriter().println("entrou");
-//		} catch (ParserException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		//response.getWriter().println(listaNo.toHtml());
 
     }
  
