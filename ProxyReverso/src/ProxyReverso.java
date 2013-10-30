@@ -28,6 +28,7 @@ import org.htmlparser.parserapplications.filterbuilder.FilterBuilder;
 import org.htmlparser.scanners.ScriptDecoder;
 import org.htmlparser.scanners.ScriptScanner;
 import org.htmlparser.tags.BodyTag;
+import org.htmlparser.tags.HeadTag;
 import org.htmlparser.tags.Html;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.ParagraphTag;
@@ -77,32 +78,35 @@ public class ProxyReverso extends AbstractHandler
             //System.out.println("TRY");
 
 			parser = new Parser(nos);
-			response.getWriter().println(parser.getEncoding());
+			//response.getWriter().println(parser.getEncoding());
 			NodeFilter filter = new TagNameFilter("html");
 	        NodeList list = parser.parse(filter).extractAllNodesThatMatch(filter);
-	        response.getWriter();
-	        response.getWriter().println(list.size());
-	        response.getWriter().println(list.toHtml().trim());
+	       // response.getWriter();
+	        //response.getWriter().println(list.size());
+	        //response.getWriter().println(list.toHtml().trim());
 	        
 	        String[][] resultSet = new String[list.size()][2];
 		
 	        for (int i=0;i<list.size();i++) {
                 Node n = list.elementAt(i);
-                response.getWriter().println(n); // DEBUG remove me!
+               // response.getWriter().println(n); // DEBUG remove me!
 	            resultSet[i][0]=n.toPlainTextString().trim();
 	            resultSet[i][1]=null;
 	            Node c = n.getLastChild();
-	            response.getWriter().println(c.toHtml());
+	           //response.getWriter().println(c.toHtml());
 	            while( c!=null ) {
-	            	//System.out.println( c.toString());
+	            	System.out.println( c.toString());
 	            	if( c instanceof BodyTag ) {
 	            		System.out.println("IF");
-	                	response.getWriter().println(c.getClass().getName());
+	             //   	response.getWriter().println(c.getClass().getName());
 	                    resultSet[i][1] = ((BodyTag) c).getTagName();
 	                    ((BodyTag) c).setTagName("Head");
 	                    Node end = ((BodyTag) c).getEndTag();
-	                    //((BodyTag) end).setEndTag(new Tag().setTagName("head"));
-	                    System.out.println(end.toString());
+	                    Tag endBody= new HeadTag();
+	                    endBody.setTagName("/Head");
+	                    ((BodyTag) c).setEndTag(endBody);
+	                    //((Tag) end).setEndTag(endBody);
+	                    System.out.println(end.getText());
 
 	                    
 	                    break;
@@ -110,8 +114,8 @@ public class ProxyReverso extends AbstractHandler
 	                c.getFirstChild();
 	            }
 	            response.getWriter().println(c.toHtml());
-	            response.getWriter().println(i+" text :"+resultSet[i][0]); // DEBUG remove me!
-	            response.getWriter().println(i+" link :"+resultSet[i][1]); // DEBUG remove me!
+	            //response.getWriter().println(i+" text :"+resultSet[i][0]); // DEBUG remove me!
+	            //response.getWriter().println(i+" link :"+resultSet[i][1]); // DEBUG remove me!
 	        } 
 		
 		} catch (ParserException e) {
