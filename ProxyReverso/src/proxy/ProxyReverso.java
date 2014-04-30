@@ -85,7 +85,8 @@ public class ProxyReverso extends AbstractHandler {
 				 */
 				System.out.println("antes");
 
-				dados = new Dados(resposta.getContent(), resposta.getHeaders(), null);
+				dados = new Dados(resposta.getContent(), resposta.getHeaders(),
+						null, "GET");
 				System.out.println("depois");
 
 				/*
@@ -106,11 +107,11 @@ public class ProxyReverso extends AbstractHandler {
 				e.printStackTrace();
 			}
 
-//			
-//			if (classes.size() > 0) {
-//				classes.get(0).processa(dados);
-//			}
-//			System.out.println("Treminou");
+			
+			 if (classes.size() > 0) {
+			 classes.get(0).processa(dados);
+			 }
+			 System.out.println("Treminou");
 
 			Iterator<HttpField> iterator = dados.getHead().iterator();
 
@@ -118,20 +119,27 @@ public class ProxyReverso extends AbstractHandler {
 				HttpField field = iterator.next();
 				System.out.println("Nome: " + field.getName() + " Valor: "
 						+ field.getValue());
+				if (field.getName().equals("Content-Length")) {
+					response.setHeader(  field.getName(), String.valueOf(dados.getContentAsString().length()));
+				} else if(field.getName().equals("Content-Encoding")) {
+					response.setHeader(field.getName(), dados.getEncoding());
+				}else{
 					response.setHeader(field.getName(), field.getValue());
+				}
 			}
-			
-			System.out.println(response.getHeader("Server"));
-			
+
+			System.out.println(response.getStatus());
+			System.out.println(response.getBufferSize());
+
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 			try {
-				System.out.println("Responra");
+				System.out.println("Respondera");
 				System.out.println(dados.getContentAsString());
-				
+
 				response.getWriter().println(dados.getContentAsString());
 				System.out.println("Respondeu");
-				
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -159,14 +167,14 @@ public class ProxyReverso extends AbstractHandler {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			dados = new Dados(resposta.getContent(), resposta.getHeaders(), null);
-			
+
+			dados = new Dados(resposta.getContent(), resposta.getHeaders(),
+					null, "POST");
+
 			if (classes.size() > 0) {
 				classes.get(0).processa(dados);
 			}
 			System.out.println("Treminou");
-			
 
 			Iterator<HttpField> iterator = dados.getHead().iterator();
 
@@ -185,21 +193,19 @@ public class ProxyReverso extends AbstractHandler {
 				System.out.println("Respondeu");
 				System.out.println(dados.getContent());
 				byte[] bytes = dados.getContent();
-				System.out.println("Tamanho do conteudo= "+bytes.length );
+				System.out.println("Tamanho do conteudo= " + bytes.length);
 				for (int i = 0; i < bytes.length; i++) {
-					
+
 					System.out.println(bytes[i]);
 				}
 				response.getWriter().println(dados.getContent().toString());
-			
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println(response.getHeader("Server"));
-			
 
-				
 			response.setStatus(HttpServletResponse.SC_OK);
 			baseRequest.setHandled(true);
 
@@ -245,8 +251,9 @@ public class ProxyReverso extends AbstractHandler {
 						}
 						System.out.println("Carregou as classes ");
 						classes.add(classe);
-					}else{
-						System.out.println("Não foi possivel carregar os nomes das classes");
+					} else {
+						System.out
+								.println("Não foi possivel carregar os nomes das classes");
 					}
 
 				}
